@@ -21,6 +21,9 @@ import {
   Image as ImageIcon,
   KeyRound,
   Sliders,
+  Copy,
+  MessageSquareHeart,
+  Clock,
 } from 'lucide-react';
 import { saveMediaBlob, deleteMediaBlob } from '../services/storage';
 import { computeSystemSummary, resetAnalyticsData } from '../services/analytics';
@@ -60,6 +63,53 @@ export default function AdminDashboardModal({
   // Settings: Custom PIN
   const [newPin, setNewPin] = useState('');
   const [pinChangeSuccess, setPinChangeSuccess] = useState(false);
+
+  // Emotion Requests State
+  const [emotionRequests, setEmotionRequests] = useState([]);
+  const [copiedReqId, setCopiedReqId] = useState(null);
+
+  // Load emotion requests from LocalStorage
+  const loadEmotionRequests = () => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('vibedesk_emotion_requests') || '[]');
+      setEmotionRequests(saved);
+    } catch {
+      setEmotionRequests([]);
+    }
+  };
+
+  React.useEffect(() => {
+    if (isOpen) {
+      loadEmotionRequests();
+    }
+  }, [isOpen, activeTab]);
+
+  const handleToggleRequestProduced = (id) => {
+    const updated = emotionRequests.map((r) =>
+      r.id === id ? { ...r, status: r.status === 'produced' ? 'new' : 'produced' } : r
+    );
+    setEmotionRequests(updated);
+    localStorage.setItem('vibedesk_emotion_requests', JSON.stringify(updated));
+  };
+
+  const handleDeleteRequest = (id) => {
+    const updated = emotionRequests.filter((r) => r.id !== id);
+    setEmotionRequests(updated);
+    localStorage.setItem('vibedesk_emotion_requests', JSON.stringify(updated));
+  };
+
+  const handleClearAllRequests = () => {
+    if (confirm('Bạn có chắc chắn muốn xóa toàn bộ danh sách gợi ý cảm xúc?')) {
+      setEmotionRequests([]);
+      localStorage.removeItem('vibedesk_emotion_requests');
+    }
+  };
+
+  const handleCopyAiPrompt = (req) => {
+    navigator.clipboard.writeText(req.aiPrompt || '').catch(() => {});
+    setCopiedReqId(req.id);
+    setTimeout(() => setCopiedReqId(null), 2000);
+  };
 
   // File Upload State
   const [audioFile, setAudioFile] = useState(null);
@@ -380,6 +430,18 @@ export default function AdminDashboardModal({
               >
                 <Music className="w-3.5 h-3.5" />
                 <span>Quản Lý Bài Hát ({tracks.length})</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('requests')}
+                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
+                  activeTab === 'requests'
+                    ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30'
+                    : 'bg-white/5 text-slate-400 hover:text-white'
+                }`}
+              >
+                <MessageSquareHeart className="w-3.5 h-3.5 text-pink-400" />
+                <span>Gợi Ý Cảm Xúc ({emotionRequests.filter((r) => r.status === 'new').length})</span>
               </button>
 
               <button
@@ -850,6 +912,154 @@ export default function AdminDashboardModal({
                   </button>
                 </div>
 
+              </div>
+            )}
+
+            {/* TAB: GỢI Ý CẢM XÚC (EMOTION REQUESTS) */}
+            {activeTab === 'requests' && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between pb-2 border-b border-white/5">
+                  <div>
+                    <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                      <MessageSquareHeart className="w-4 h-4 text-pink-400" />
+                      <span>Hòm Thư Cảm Xúc Khán Giả ({emotionRequests.length})</span>
+                    </h4>
+                    <p className="text-xs text-slate-400">
+                      Các cảm xúc, câu chuyện và prompt AI do người nghe gửi về để tạo nhạc mới
+                    </p>
+                  </div>
+
+                  {emotionRequests.length > 0 && (
+                    <button
+                      onClick={handleClearAllRequests}
+                      className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 border border-rose-500/30 transition-all"
+                    >
+                      Xóa tất cả
+                    </button>
+                  )}
+                </div>
+
+                {emotionRequests.length === 0 ? (
+                  <div className="py-16 text-center space-y-2">
+                    <MessageSquareHeart className="w-10 h-10 text-slate-600 mx-auto" />
+                    <p className="text-sm font-semibold text-slate-400">Chưa có gợi ý cảm xúc nào</p>
+                    <p className="text-xs text-slate-500">
+                      Khi người nghe bấm "Gợi Ý Cảm Xúc" trên trang chủ, các đề xuất sẽ xuất hiện tại đây
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+                    {emotionRequests.map((req) => {
+                      const isProduced = req.status === 'produced';
+                      const isCopied = copiedReqId === req.id;
+                      const dateStr = req.timestamp
+                        ? new Date(req.timestamp).toLocaleString('vi-VN')
+                        : 'Vừa xong';
+
+                      return (
+                        <div
+                          key={req.id}
+                          className={`p-4 rounded-2xl border transition-all space-y-3 ${
+                            isProduced
+                              ? 'bg-white/[0.02] border-white/5 opacity-70'
+                              : 'bg-white/[0.04] border-purple-500/30 shadow-md shadow-purple-900/10'
+                          }`}
+                        >
+                          {/* Card Header */}
+                          <div className="flex items-center justify-between flex-wrap gap-2">
+                            <div className="flex items-center gap-2">
+                              <span
+                                className="px-2.5 py-1 rounded-xl text-xs font-bold text-white border"
+                                style={{
+                                  backgroundColor: `${req.accentColor || '#a855f7'}20`,
+                                  borderColor: `${req.accentColor || '#a855f7'}60`,
+                                }}
+                              >
+                                {req.moodTitle || 'Cảm xúc'}
+                              </span>
+                              <span className="px-2 py-0.5 rounded-lg bg-white/5 text-[11px] text-slate-300">
+                                {req.genre}
+                              </span>
+                              <span className="text-[11px] text-slate-400">bởi {req.nickname}</span>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] text-slate-500 font-mono flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                {dateStr}
+                              </span>
+                              <button
+                                onClick={() => handleToggleRequestProduced(req.id)}
+                                className={`px-2 py-0.5 rounded-lg text-[10px] font-semibold transition-all border ${
+                                  isProduced
+                                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                                    : 'bg-purple-500/20 text-purple-300 border-purple-500/30 hover:bg-purple-500/30'
+                                }`}
+                              >
+                                {isProduced ? '✓ Đã tạo bài' : 'Chưa tạo'}
+                              </button>
+                              <button
+                                onClick={() => handleDeleteRequest(req.id)}
+                                className="p-1 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                                title="Xóa gợi ý này"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Story / Description */}
+                          {req.story && (
+                            <p className="text-xs text-slate-200 italic bg-black/30 p-2.5 rounded-xl border border-white/5">
+                              "{req.story}"
+                            </p>
+                          )}
+
+                          {/* Instruments */}
+                          {req.instruments && req.instruments.length > 0 && (
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className="text-[10px] text-slate-500">Nhạc cụ:</span>
+                              {req.instruments.map((inst, i) => (
+                                <span
+                                  key={i}
+                                  className="px-2 py-0.5 rounded-md bg-white/5 text-[10px] text-pink-300"
+                                >
+                                  {inst}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* AI Prompt Box & Copy */}
+                          {req.aiPrompt && (
+                            <div className="p-2.5 rounded-xl bg-black/60 border border-white/10 flex items-start justify-between gap-3">
+                              <p className="text-[11px] font-mono text-purple-200 leading-relaxed break-words flex-1">
+                                {req.aiPrompt}
+                              </p>
+                              <button
+                                onClick={() => handleCopyAiPrompt(req)}
+                                className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-purple-600 hover:bg-purple-500 text-white flex items-center gap-1.5 shrink-0 transition-all shadow-md shadow-purple-600/30"
+                              >
+                                {isCopied ? (
+                                  <>
+                                    <Check className="w-3 h-3 text-emerald-300" />
+                                    <span>Đã chép!</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Copy className="w-3 h-3" />
+                                    <span>Copy Prompt Suno</span>
+                                  </>
+                                )}
+                              </button>
+                            </div>
+                          )}
+
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             )}
 

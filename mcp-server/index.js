@@ -152,6 +152,14 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
         },
       },
+      {
+        name: 'vibedesk_get_emotion_requests',
+        description: 'Retrieve community emotion, story, and AI music requests submitted by listeners to inspire AI music generation.',
+        inputSchema: {
+          type: 'object',
+          properties: {},
+        },
+      },
     ],
   };
 });
@@ -336,6 +344,35 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             {
               type: 'text',
               text: `Git Auto-Sync succeeded!\n\n${output}\nDeployment triggered on remote repository.`,
+            },
+          ],
+        };
+      }
+
+      case 'vibedesk_get_emotion_requests': {
+        const communityFile = path.join(projectRoot, 'src', 'data', 'emotion_requests.json');
+        let requests = [];
+        if (fs.existsSync(communityFile)) {
+          try {
+            requests = JSON.parse(fs.readFileSync(communityFile, 'utf-8'));
+          } catch {
+            requests = [];
+          }
+        }
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(
+                {
+                  totalInFile: requests.length,
+                  requests,
+                  note: 'Client-side submissions are stored in browser LocalStorage (vibedesk_emotion_requests) and visible in Admin Studio tab "Gợi Ý Cảm Xúc".',
+                },
+                null,
+                2
+              ),
             },
           ],
         };

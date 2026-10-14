@@ -22,6 +22,7 @@ export default function Navbar({
   onOpenSleepTimer,
   onOpenAmbientMixer,
   onOpenFocusDecor,
+  onOpenEmotionFeedback,
   isTimerActive,
   timerSecondsLeft,
   totalTracks,
@@ -82,6 +83,13 @@ export default function Navbar({
               title="Hòa âm môi trường"
             >
               <Waves className="w-4 h-4" />
+            </button>
+            <button
+              onClick={onOpenEmotionFeedback}
+              className="p-2 rounded-xl bg-pink-500/20 border border-pink-500/30 text-pink-300"
+              title="Gợi ý cảm xúc làm nhạc AI"
+            >
+              <Sparkles className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -146,6 +154,16 @@ export default function Navbar({
                 ? `${Math.ceil(timerSecondsLeft / 60)}m`
                 : 'Hẹn giờ'}
             </span>
+          </button>
+
+          {/* Emotion Feedback & AI Vibe Request */}
+          <button
+            onClick={onOpenEmotionFeedback}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-gradient-to-r from-pink-600/20 via-purple-600/20 to-indigo-600/20 hover:from-pink-600/40 hover:to-purple-600/40 text-pink-200 border border-pink-400/30 transition-all hover:scale-105 active:scale-95 shadow-md shadow-pink-900/30"
+            title="Gợi ý cảm xúc & câu chuyện để AI tạo bài hát mới"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-pink-400" />
+            <span>Gợi Ý Cảm Xúc</span>
           </button>
         </div>
       </div>

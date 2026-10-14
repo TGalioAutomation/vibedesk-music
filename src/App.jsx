@@ -9,6 +9,7 @@ import AdminDashboardModal from './components/AdminDashboardModal';
 import SleepTimerModal from './components/SleepTimerModal';
 import AmbientMixerModal from './components/AmbientMixerModal';
 import FocusDecorView from './components/FocusDecorView';
+import EmotionFeedbackModal from './components/EmotionFeedbackModal';
 import useKeyboardAndMediaSession from './hooks/useKeyboardAndMediaSession';
 import { getMediaBlobUrl } from './services/storage';
 import {
@@ -57,6 +58,7 @@ export default function App() {
   const [isSleepTimerOpen, setIsSleepTimerOpen] = useState(false);
   const [isAmbientMixerOpen, setIsAmbientMixerOpen] = useState(false);
   const [isFocusDecorOpen, setIsFocusDecorOpen] = useState(false);
+  const [isEmotionFeedbackOpen, setIsEmotionFeedbackOpen] = useState(false);
 
   // Sleep Timer States
   const [timerMode, setTimerMode] = useState(null); // 'time' | 'end_of_track' | null
@@ -573,6 +575,7 @@ export default function App() {
         onOpenSleepTimer={() => setIsSleepTimerOpen(true)}
         onOpenAmbientMixer={() => setIsAmbientMixerOpen(true)}
         onOpenFocusDecor={() => setIsFocusDecorOpen(true)}
+        onOpenEmotionFeedback={() => setIsEmotionFeedbackOpen(true)}
         isTimerActive={timerMode !== null}
         timerSecondsLeft={timerSecondsLeft}
         totalTracks={tracks.length}
@@ -736,6 +739,12 @@ export default function App() {
         isFavorite={favorites.includes(activeTrack?.id)}
         onToggleFavorite={handleToggleFavorite}
         analyserNode={analyserRef.current}
+      />
+
+      {/* Emotion Feedback & AI Vibe Request Modal */}
+      <EmotionFeedbackModal
+        isOpen={isEmotionFeedbackOpen}
+        onClose={() => setIsEmotionFeedbackOpen(false)}
       />
 
     </div>
