@@ -16,8 +16,8 @@ With this server connected, your AI assistant can autonomously:
 
 ### A. Claude Desktop
 Edit your Claude Desktop configuration file:
-- **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
 - **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
 
 Add the following block under `mcpServers`:
 
@@ -25,9 +25,9 @@ Add the following block under `mcpServers`:
 {
   "mcpServers": {
     "vibedesk-music": {
-      "command": "node",
+      "command": "/opt/homebrew/bin/node",
       "args": [
-        "c:/Users/svphu/Desktop/webapp-nghe-nhac/mcp-server/index.js"
+        "/Users/apexdev/Desktop/Projects/vibedesk-music/mcp-server/index.js"
       ]
     }
   }
@@ -37,15 +37,15 @@ Add the following block under `mcpServers`:
 ---
 
 ### B. Cursor IDE
-Create or edit `.cursor/mcp.json` in your project root (or navigate to `Cursor Settings` -> `Features` -> `MCP`):
+Create or edit `.cursor/mcp.json` in your project root or `~/.cursor/mcp.json`:
 
 ```json
 {
   "mcpServers": {
-    "vibedesk": {
-      "command": "node",
+    "vibedesk-music": {
+      "command": "/opt/homebrew/bin/node",
       "args": [
-        "c:/Users/svphu/Desktop/webapp-nghe-nhac/mcp-server/index.js"
+        "/Users/apexdev/Desktop/Projects/vibedesk-music/mcp-server/index.js"
       ]
     }
   }
@@ -54,15 +54,15 @@ Create or edit `.cursor/mcp.json` in your project root (or navigate to `Cursor S
 
 ---
 
-### C. Antigravity / Gemini
-Add to your `mcp_config.json`:
+### C. Antigravity / Gemini / Cline
+Add to your client MCP configuration:
 
 ```json
 {
-  "vibedesk": {
-    "command": "node",
+  "vibedesk-music": {
+    "command": "/opt/homebrew/bin/node",
     "args": [
-      "c:/Users/svphu/Desktop/webapp-nghe-nhac/mcp-server/index.js"
+      "/Users/apexdev/Desktop/Projects/vibedesk-music/mcp-server/index.js"
     ]
   }
 }
