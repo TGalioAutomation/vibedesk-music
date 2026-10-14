@@ -41,8 +41,8 @@ docker compose up -d --build --remove-orphans
 
 # 3. Reload Nginx để cập nhật bản build mới và proxy config tức thì
 if docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_FRONTEND}$"; then
-  echo "🔄 Đang reload Nginx..."
-  docker exec "${CONTAINER_FRONTEND}" nginx -s reload || true
+  echo "🔄 Đang khởi động lại Nginx container..."
+  docker compose restart "${CONTAINER_FRONTEND}" || docker exec "${CONTAINER_FRONTEND}" nginx -s reload || true
 fi
 
 # 4. Kiểm tra Health Check
