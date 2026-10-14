@@ -8,10 +8,13 @@ services:
     ports:
       - "127.0.0.1:3004:3004"
     volumes:
-      - ./src/data:/app/src/data
+      - ./storage/data:/app/storage/data
+      - ./storage/uploads:/app/storage/uploads
     environment:
       - PORT=3004
       - NODE_ENV=production
+      - DATA_DIR=/app/storage/data
+      - UPLOADS_DIR=/app/storage/uploads
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3004/api/health"]
       interval: 30s

@@ -46,7 +46,7 @@ jobs:
           username: ${{ secrets.SSH_USER || 'root' }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT || 22 }}
-          source: 'dist,nginx.conf,docker-compose.yml,Dockerfile,scripts'
+          source: 'dist,nginx.conf,docker-compose.yml,Dockerfile,Dockerfile.api,scripts,mcp-server,src/data'
           target: '/opt/apps/vibedesk-music'
           overwrite: true
 

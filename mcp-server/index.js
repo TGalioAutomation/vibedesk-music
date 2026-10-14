@@ -8,6 +8,7 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import express from 'express';
 import cors from 'cors';
+import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -16,19 +17,55 @@ import { execSync } from 'child_process';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, '..');
-const playlistPath = path.join(projectRoot, 'src', 'data', 'playlist.json');
-const communityFile = path.join(projectRoot, 'src', 'data', 'community-requests.json');
 
-// Helper to safely read playlist.json
-function readPlaylist() {
-  if (!fs.existsSync(playlistPath)) {
-    throw new Error(`playlist.json not found at: ${playlistPath}`);
+// ----------------------------------------------------------------------------
+// Persistent Storage Paths (Protected from git pulls and container re-deploys)
+// ----------------------------------------------------------------------------
+const dataDir = process.env.DATA_DIR || path.join(projectRoot, 'storage', 'data');
+const uploadsDir = process.env.UPLOADS_DIR || path.join(projectRoot, 'storage', 'uploads');
+
+// Ensure storage directories exist
+fs.mkdirSync(dataDir, { recursive: true });
+fs.mkdirSync(uploadsDir, { recursive: true });
+
+const playlistPath = path.join(dataDir, 'playlist.json');
+const communityFile = path.join(dataDir, 'community-requests.json');
+const defaultSeedPlaylist = path.join(projectRoot, 'src', 'data', 'playlist.json');
+
+// Initialize persistent playlist.json if not present
+if (!fs.existsSync(playlistPath)) {
+  if (fs.existsSync(defaultSeedPlaylist)) {
+    try {
+      fs.copyFileSync(defaultSeedPlaylist, playlistPath);
+      console.log('Seeded persistent playlist.json from default template.');
+    } catch {
+      fs.writeFileSync(playlistPath, JSON.stringify({ tracks: [] }, null, 2), 'utf-8');
+    }
+  } else {
+    fs.writeFileSync(playlistPath, JSON.stringify({ tracks: [] }, null, 2), 'utf-8');
   }
-  const raw = fs.readFileSync(playlistPath, 'utf-8');
-  return JSON.parse(raw);
 }
 
-// Helper to safely write playlist.json
+// Initialize persistent community-requests.json if not present
+if (!fs.existsSync(communityFile)) {
+  fs.writeFileSync(communityFile, '[]', 'utf-8');
+}
+
+// Helper to safely read persistent playlist.json
+function readPlaylist() {
+  if (!fs.existsSync(playlistPath)) {
+    return { curator: 'VibeDesk SoundLab', version: '2.5.0', tracks: [] };
+  }
+  try {
+    const raw = fs.readFileSync(playlistPath, 'utf-8');
+    return JSON.parse(raw);
+  } catch (err) {
+    console.error('Error reading playlist.json:', err);
+    return { curator: 'VibeDesk SoundLab', version: '2.5.0', tracks: [] };
+  }
+}
+
+// Helper to safely write persistent playlist.json
 function writePlaylist(data) {
   data.updatedAt = new Date().toISOString().split('T')[0];
   fs.writeFileSync(playlistPath, JSON.stringify(data, null, 2), 'utf-8');
@@ -48,7 +85,30 @@ function writeEmotionRequests(data) {
   fs.writeFileSync(communityFile, JSON.stringify(data, null, 2), 'utf-8');
 }
 
-// Create configured MCP Server instance
+// ----------------------------------------------------------------------------
+// Multer Configuration for Audio & Cover Uploads
+// ----------------------------------------------------------------------------
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadsDir);
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const cleanExt = ext || (file.mimetype.includes('audio') ? '.mp3' : '.jpg');
+    const prefix = file.fieldname === 'audio' ? 'audio' : 'cover';
+    const uniqueName = `${prefix}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}${cleanExt}`;
+    cb(null, uniqueName);
+  },
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB max per file
+});
+
+// ----------------------------------------------------------------------------
+// MCP Server Factory
+// ----------------------------------------------------------------------------
 function createMcpServer() {
   const server = new Server(
     {
@@ -68,7 +128,7 @@ function createMcpServer() {
       tools: [
         {
           name: 'vibedesk_list_tracks',
-          description: 'Get all songs currently configured in VibeDesk Music playlist with metadata.',
+          description: 'Get all songs currently configured in persistent VibeDesk Music playlist with metadata.',
           inputSchema: {
             type: 'object',
             properties: {},
@@ -76,7 +136,7 @@ function createMcpServer() {
         },
         {
           name: 'vibedesk_add_track',
-          description: 'Add a new track into VibeDesk Music playlist with audio URL, cover image, lyrics, and metadata.',
+          description: 'Add a new track into persistent VibeDesk Music playlist with audio URL, cover image, lyrics, and metadata.',
           inputSchema: {
             type: 'object',
             properties: {
@@ -120,7 +180,7 @@ function createMcpServer() {
         },
         {
           name: 'vibedesk_delete_track',
-          description: 'Delete a track from VibeDesk Music playlist by ID.',
+          description: 'Delete a track from persistent VibeDesk Music playlist by ID.',
           inputSchema: {
             type: 'object',
             properties: {
@@ -131,7 +191,7 @@ function createMcpServer() {
         },
         {
           name: 'vibedesk_batch_import',
-          description: 'Batch import an array of track objects into VibeDesk Music playlist.',
+          description: 'Batch import an array of track objects into persistent VibeDesk Music playlist.',
           inputSchema: {
             type: 'object',
             properties: {
@@ -160,7 +220,7 @@ function createMcpServer() {
         },
         {
           name: 'vibedesk_git_sync',
-          description: 'Automatically commit updated playlist.json and push to GitHub repository main branch to trigger auto-deployment.',
+          description: 'Sync persistent playlist to git repo and push to GitHub repository main branch.',
           inputSchema: {
             type: 'object',
             properties: {
@@ -220,7 +280,7 @@ function createMcpServer() {
             featured: Boolean(args.featured),
           };
 
-          playlist.tracks.push(newTrack);
+          playlist.tracks.unshift(newTrack);
           writePlaylist(playlist);
 
           return {
@@ -271,10 +331,25 @@ function createMcpServer() {
         case 'vibedesk_delete_track': {
           const playlist = readPlaylist();
           const initialLen = playlist.tracks.length;
+          const trackToDelete = playlist.tracks.find((t) => t.id === args.id);
           playlist.tracks = playlist.tracks.filter((t) => t.id !== args.id);
 
           if (playlist.tracks.length === initialLen) {
             throw new Error(`Track with ID "${args.id}" not found in playlist.`);
+          }
+
+          // Clean up physical file if it was uploaded to /uploads/
+          if (trackToDelete?.audioUrl?.startsWith('/uploads/')) {
+            const p = path.join(uploadsDir, path.basename(trackToDelete.audioUrl));
+            if (fs.existsSync(p)) {
+              try { fs.unlinkSync(p); } catch {}
+            }
+          }
+          if (trackToDelete?.cover?.startsWith('/uploads/')) {
+            const p = path.join(uploadsDir, path.basename(trackToDelete.cover));
+            if (fs.existsSync(p)) {
+              try { fs.unlinkSync(p); } catch {}
+            }
           }
 
           writePlaylist(playlist);
@@ -295,7 +370,7 @@ function createMcpServer() {
 
           for (const item of args.tracks) {
             const newId = `trk-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
-            playlist.tracks.push({
+            playlist.tracks.unshift({
               id: newId,
               title: item.title,
               artist: item.artist,
@@ -331,7 +406,11 @@ function createMcpServer() {
             `chore(music): update playlist tracks via VibeDesk AI MCP [${new Date().toISOString()}]`;
 
           try {
-            execSync(`git add "${playlistPath}"`, { cwd: projectRoot });
+            // Copy persistent playlist back to src/data/playlist.json for repo backup
+            if (fs.existsSync(playlistPath)) {
+              fs.copyFileSync(playlistPath, defaultSeedPlaylist);
+            }
+            execSync(`git add "${defaultSeedPlaylist}"`, { cwd: projectRoot });
             execSync(`git commit -m "${commitMsg.replace(/"/g, '\\"')}"`, {
               cwd: projectRoot,
             });
@@ -411,6 +490,12 @@ if (isStdioMode) {
 
   app.use(cors());
 
+  // Static files server for user uploaded audio & covers
+  app.use('/uploads', express.static(uploadsDir, {
+    maxAge: '30d',
+    immutable: true,
+  }));
+
   // Store active SSE transports by sessionId
   const sseTransports = new Map();
 
@@ -420,6 +505,11 @@ if (isStdioMode) {
       status: 'ok',
       service: 'vibedesk-api-mcp',
       time: new Date().toISOString(),
+      storage: {
+        dataDir,
+        uploadsDir,
+        playlistExists: fs.existsSync(playlistPath),
+      },
       mcpEndpoints: {
         sse: '/mcp/sse',
         messages: '/mcp/messages',
@@ -427,7 +517,34 @@ if (isStdioMode) {
     });
   });
 
-  // REST API: Get playlist
+  // REST API: Upload Audio & Cover Files
+  app.post(
+    '/api/upload',
+    upload.fields([
+      { name: 'audio', maxCount: 1 },
+      { name: 'cover', maxCount: 1 },
+    ]),
+    (req, res) => {
+      try {
+        const result = {};
+        if (req.files?.audio?.[0]) {
+          result.audioUrl = `/uploads/${req.files.audio[0].filename}`;
+          result.audioOriginalName = req.files.audio[0].originalname;
+          result.audioSize = req.files.audio[0].size;
+        }
+        if (req.files?.cover?.[0]) {
+          result.coverUrl = `/uploads/${req.files.cover[0].filename}`;
+          result.coverOriginalName = req.files.cover[0].originalname;
+        }
+        res.json(result);
+      } catch (err) {
+        console.error('Upload processing error:', err);
+        res.status(500).json({ error: err.message });
+      }
+    }
+  );
+
+  // REST API: Get persistent playlist
   app.get('/api/playlist', (req, res) => {
     try {
       res.json(readPlaylist());
@@ -436,31 +553,88 @@ if (isStdioMode) {
     }
   });
 
-  // REST API: Add track
+  // REST API: Add track to persistent playlist
   app.post('/api/tracks', express.json(), (req, res) => {
     try {
       const playlist = readPlaylist();
-      const newId = `trk-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+      const newId = req.body.id || `trk-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
       const newTrack = {
         id: newId,
-        ...req.body,
+        title: req.body.title || 'Untitled',
+        artist: req.body.artist || 'Unknown Artist',
+        album: req.body.album || 'Single',
+        duration: Number(req.body.duration) || 180,
+        genre: req.body.genre || 'Lofi & Chill',
+        audioUrl: req.body.audioUrl,
+        cover:
+          req.body.cover ||
+          'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80',
+        accentColor: req.body.accentColor || '#8b5cf6',
+        lyrics: req.body.lyrics || '',
+        featured: Boolean(req.body.featured),
+        createdAt: new Date().toISOString(),
       };
-      playlist.tracks.push(newTrack);
+
+      // Add to top of tracks
+      playlist.tracks.unshift(newTrack);
       writePlaylist(playlist);
+      console.log(`[API] Added track "${newTrack.title}" (${newId}) to persistent playlist.`);
       res.status(201).json(newTrack);
     } catch (err) {
+      console.error('[API] Add track error:', err);
       res.status(500).json({ error: err.message });
     }
   });
 
-  // REST API: Delete track
+  // REST API: Delete track from persistent playlist
   app.delete('/api/tracks/:id', (req, res) => {
     try {
       const playlist = readPlaylist();
-      playlist.tracks = playlist.tracks.filter((t) => t.id !== req.params.id);
+      const trackId = req.params.id;
+      const trackToDelete = playlist.tracks.find((t) => t.id === trackId);
+
+      if (!trackToDelete) {
+        return res.status(404).json({ error: `Track with ID "${trackId}" not found.` });
+      }
+
+      // Clean up physical file if it was uploaded to /uploads/
+      if (trackToDelete.audioUrl?.startsWith('/uploads/')) {
+        const p = path.join(uploadsDir, path.basename(trackToDelete.audioUrl));
+        if (fs.existsSync(p)) {
+          try { fs.unlinkSync(p); } catch {}
+        }
+      }
+      if (trackToDelete.cover?.startsWith('/uploads/')) {
+        const p = path.join(uploadsDir, path.basename(trackToDelete.cover));
+        if (fs.existsSync(p)) {
+          try { fs.unlinkSync(p); } catch {}
+        }
+      }
+
+      playlist.tracks = playlist.tracks.filter((t) => t.id !== trackId);
       writePlaylist(playlist);
-      res.json({ success: true, id: req.params.id });
+      console.log(`[API] Deleted track "${trackToDelete.title}" (${trackId}) from persistent playlist.`);
+      res.json({ success: true, id: trackId, remaining: playlist.tracks.length });
     } catch (err) {
+      console.error('[API] Delete track error:', err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // REST API: Reset playlist to default seed template
+  app.post('/api/tracks/reset', (req, res) => {
+    try {
+      if (fs.existsSync(defaultSeedPlaylist)) {
+        const raw = fs.readFileSync(defaultSeedPlaylist, 'utf-8');
+        const seedData = JSON.parse(raw);
+        writePlaylist(seedData);
+        console.log('[API] Reset persistent playlist to default seed template.');
+        res.json({ success: true, message: 'Reset to default seed playlist', tracks: seedData.tracks });
+      } else {
+        res.status(404).json({ error: 'Default seed playlist not found' });
+      }
+    } catch (err) {
+      console.error('[API] Reset error:', err);
       res.status(500).json({ error: err.message });
     }
   });
@@ -485,8 +659,8 @@ if (isStdioMode) {
         ...req.body,
       };
       requests.unshift(newReq);
-      // Keep up to 200 recent requests
-      if (requests.length > 200) requests.length = 200;
+      // Keep up to 500 recent requests
+      if (requests.length > 500) requests.length = 500;
       writeEmotionRequests(requests);
       res.status(201).json(newReq);
     } catch (err) {
@@ -537,7 +711,9 @@ if (isStdioMode) {
 
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`🌐 VibeDesk API & MCP Web Server listening on port ${PORT}`);
-    console.log(`   - MCP SSE Endpoint: http://localhost:${PORT}/mcp/sse`);
-    console.log(`   - REST API:         http://localhost:${PORT}/api/playlist`);
+    console.log(`   - Data Directory:    ${dataDir}`);
+    console.log(`   - Uploads Directory: ${uploadsDir}`);
+    console.log(`   - MCP SSE Endpoint:  http://localhost:${PORT}/mcp/sse`);
+    console.log(`   - REST API:          http://localhost:${PORT}/api/playlist`);
   });
 }

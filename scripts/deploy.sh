@@ -14,9 +14,26 @@ API_PORT="3004"
 
 echo "🚀 [$(date '+%Y-%m-%d %H:%M:%S')] Bắt đầu quy trình Deploy VibeDesk Music & MCP Web API..."
 
-# 1. Đảm bảo thư mục triển khai và thư mục dữ liệu tồn tại
-mkdir -p "${APP_DIR}/dist" "${APP_DIR}/src/data"
+# 1. Đảm bảo thư mục triển khai và thư mục lưu trữ persistent tồn tại (bảo toàn data qua mọi lần deploy)
+mkdir -p "${APP_DIR}/dist" "${APP_DIR}/src/data" "${APP_DIR}/storage/data" "${APP_DIR}/storage/uploads"
 cd "${APP_DIR}"
+
+# 1.1 Khởi tạo dữ liệu persistent từ template nếu lần đầu chạy trên host
+if [ ! -f "${APP_DIR}/storage/data/playlist.json" ]; then
+  if [ -f "${APP_DIR}/src/data/playlist.json" ]; then
+    cp "${APP_DIR}/src/data/playlist.json" "${APP_DIR}/storage/data/playlist.json"
+    echo "📄 Đã khởi tạo storage/data/playlist.json từ mẫu mặc định."
+  else
+    echo '{"curator":"Admin SoundLab","version":"2.5.0","tracks":[]}' > "${APP_DIR}/storage/data/playlist.json"
+  fi
+fi
+
+if [ ! -f "${APP_DIR}/storage/data/community-requests.json" ]; then
+  echo '[]' > "${APP_DIR}/storage/data/community-requests.json"
+fi
+
+# 1.2 Đảm bảo quyền ghi cho container Node.js và Nginx
+chmod -R 777 "${APP_DIR}/storage/uploads" "${APP_DIR}/storage/data"
 
 # 2. Khởi động hoặc cập nhật containers qua Docker Compose (build API container nếu có thay đổi)
 echo "📦 Đang khởi chạy containers qua Docker Compose..."

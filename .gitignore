@@ -34,3 +34,6 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
+
+# Persistent runtime data & user uploads (never overwrite on deploy)
+storage/

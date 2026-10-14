@@ -257,15 +257,36 @@ export default function AdminDashboardModal({
       let finalAudioUrl = formData.audioUrl;
       let finalCoverUrl = formData.cover;
 
-      // If user uploaded an audio file, persist blob to IndexedDB
-      if (audioFile) {
+      // Upload audio file and cover image to backend server if provided
+      if (audioFile || coverFile) {
+        try {
+          const uploadPayload = new FormData();
+          if (audioFile) uploadPayload.append('audio', audioFile);
+          if (coverFile) uploadPayload.append('cover', coverFile);
+
+          const uploadRes = await fetch('/api/upload', {
+            method: 'POST',
+            body: uploadPayload,
+          });
+
+          if (uploadRes.ok) {
+            const uploaded = await uploadRes.json();
+            if (uploaded.audioUrl) finalAudioUrl = uploaded.audioUrl;
+            if (uploaded.coverUrl) finalCoverUrl = uploaded.coverUrl;
+          }
+        } catch (uploadErr) {
+          console.warn('Server upload failed, falling back to local storage:', uploadErr);
+        }
+      }
+
+      // Also persist to IndexedDB for offline instant playback
+      if (audioFile && (!finalAudioUrl || finalAudioUrl.startsWith('idb://'))) {
         const audioKey = `audio_${trackId}`;
         await saveMediaBlob(audioKey, audioFile);
         finalAudioUrl = `idb://${audioKey}`;
       }
 
-      // If user uploaded a cover image, persist blob to IndexedDB
-      if (coverFile) {
+      if (coverFile && (!finalCoverUrl || finalCoverUrl.startsWith('idb://'))) {
         const coverKey = `cover_${trackId}`;
         await saveMediaBlob(coverKey, coverFile);
         finalCoverUrl = `idb://${coverKey}`;
@@ -279,7 +300,23 @@ export default function AdminDashboardModal({
         duration: Number(formData.duration) || 180,
       };
 
-      onAddTrack(newTrack);
+      // Persist to server API playlist so all listeners and deploys retain this song
+      try {
+        const apiRes = await fetch('/api/tracks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newTrack),
+        });
+        if (apiRes.ok) {
+          const savedFromApi = await apiRes.json();
+          onAddTrack(savedFromApi);
+        } else {
+          onAddTrack(newTrack);
+        }
+      } catch {
+        onAddTrack(newTrack);
+      }
+
       setFormSuccess(true);
       setTimeout(() => setFormSuccess(false), 3000);
 
@@ -300,8 +337,8 @@ export default function AdminDashboardModal({
       });
       setActiveTab('manage');
     } catch (err) {
-      console.error('Lỗi khi lưu bài hát vào IndexedDB:', err);
-      alert('Không thể lưu file âm thanh. Vui lòng thử lại!');
+      console.error('Lỗi khi lưu bài hát:', err);
+      alert('Không thể lưu bài hát. Vui lòng kiểm tra kết nối mạng và thử lại!');
     } finally {
       setIsProcessingFile(false);
     }

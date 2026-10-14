@@ -41,8 +41,15 @@ export default function App() {
             if (localTracks.length > 0) {
               const serverIds = new Set(data.tracks.map((t) => t.id));
               const uniqueLocal = localTracks.filter((t) => !serverIds.has(t.id));
-              return [...data.tracks, ...uniqueLocal];
+              const combined = [...data.tracks, ...uniqueLocal];
+              try {
+                localStorage.setItem('aurasound_admin_tracks', JSON.stringify(combined));
+              } catch {}
+              return combined;
             }
+            try {
+              localStorage.setItem('aurasound_admin_tracks', JSON.stringify(data.tracks));
+            } catch {}
             return data.tracks;
           });
         }
@@ -499,16 +506,41 @@ export default function App() {
 
   // Admin Dashboard Handlers
   const handleAddTrack = (newTrack) => {
-    setTracks((prev) => [newTrack, ...prev]);
+    setTracks((prev) => {
+      const exists = prev.some((t) => t.id === newTrack.id);
+      const updated = exists ? prev.map((t) => (t.id === newTrack.id ? newTrack : t)) : [newTrack, ...prev];
+      try {
+        localStorage.setItem('aurasound_admin_tracks', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
   };
 
-  const handleDeleteTrack = (trackId) => {
+  const handleDeleteTrack = async (trackId) => {
     if (tracks.length <= 1) {
       alert('Danh mục phải giữ lại ít nhất 1 bài hát!');
       return;
     }
-    setTracks((prev) => prev.filter((t) => t.id !== trackId));
-    if (currentTrack?.id === trackId) {
+
+    // Call backend API to permanently delete from server storage
+    try {
+      const res = await fetch(`/api/tracks/${trackId}`, { method: 'DELETE' });
+      if (!res.ok) {
+        console.warn('Server delete returned non-200, proceeding with local update');
+      }
+    } catch (err) {
+      console.warn('Network error deleting from server, deleting locally:', err);
+    }
+
+    setTracks((prev) => {
+      const updated = prev.filter((t) => t.id !== trackId);
+      try {
+        localStorage.setItem('aurasound_admin_tracks', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+
+    if (activeTrack?.id === trackId) {
       handleNextTrack();
     }
   };
@@ -519,10 +551,25 @@ export default function App() {
     );
   };
 
-  const handleResetDefaultTracks = () => {
+  const handleResetDefaultTracks = async () => {
     if (window.confirm('Khôi phục danh sách bài hát về trạng thái mẫu ban đầu?')) {
+      try {
+        const res = await fetch('/api/tracks/reset', { method: 'POST' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.tracks && Array.isArray(data.tracks)) {
+            setTracks(data.tracks);
+            try {
+              localStorage.setItem('aurasound_admin_tracks', JSON.stringify(data.tracks));
+            } catch {}
+            return;
+          }
+        }
+      } catch {}
       setTracks(defaultPlaylistData.tracks);
-      localStorage.removeItem('aurasound_admin_tracks');
+      try {
+        localStorage.removeItem('aurasound_admin_tracks');
+      } catch {}
     }
   };
 
