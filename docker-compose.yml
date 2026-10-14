@@ -1,4 +1,28 @@
 services:
+  vibedesk-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: vibedesk-api
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3004:3004"
+    volumes:
+      - ./src/data:/app/src/data
+    environment:
+      - PORT=3004
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3004/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   vibedesk-music:
     image: nginx:alpine
     container_name: vibedesk-music
@@ -8,6 +32,8 @@ services:
     volumes:
       - ./dist:/usr/share/nginx/html:ro
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - vibedesk-api
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:80/"]
       interval: 30s

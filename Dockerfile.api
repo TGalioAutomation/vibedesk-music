@@ -1,0 +1,23 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy dependency manifests
+COPY mcp-server/package*.json ./mcp-server/
+
+# Install server dependencies
+RUN cd mcp-server && npm ci --production
+
+# Copy source code and data files
+COPY mcp-server/ ./mcp-server/
+COPY src/data/ ./src/data/
+
+ENV NODE_ENV=production
+ENV PORT=3004
+
+EXPOSE 3004
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+  CMD wget -q --spider http://127.0.0.1:3004/api/health || exit 1
+
+CMD ["node", "mcp-server/index.js"]

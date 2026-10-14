@@ -144,8 +144,17 @@ export default function EmotionFeedbackModal({ isOpen, onClose }) {
       existing.unshift(requestItem);
       localStorage.setItem('vibedesk_emotion_requests', JSON.stringify(existing));
     } catch (err) {
-      console.error('Failed to save emotion request:', err);
+      console.error('Failed to save emotion request to localStorage:', err);
     }
+
+    // Sync to backend server API so AI MCP & Admin can inspect it globally
+    fetch('/api/emotion-requests', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestItem),
+    }).catch((err) => {
+      console.warn('API emotion sync failed, falling back to local storage:', err);
+    });
 
     setIsSubmitted(true);
   };

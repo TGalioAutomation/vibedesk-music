@@ -30,6 +30,26 @@ export default function App() {
     }
   });
 
+  // Fetch live playlist from backend API
+  useEffect(() => {
+    fetch('/api/playlist')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && Array.isArray(data.tracks) && data.tracks.length > 0) {
+          setTracks((prev) => {
+            const localTracks = prev.filter((t) => t.audioUrl && t.audioUrl.startsWith('idb://'));
+            if (localTracks.length > 0) {
+              const serverIds = new Set(data.tracks.map((t) => t.id));
+              const uniqueLocal = localTracks.filter((t) => !serverIds.has(t.id));
+              return [...data.tracks, ...uniqueLocal];
+            }
+            return data.tracks;
+          });
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);

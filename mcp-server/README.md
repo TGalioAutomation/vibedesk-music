@@ -14,21 +14,29 @@ With this server connected, your AI assistant can autonomously:
 
 ## 🛠️ 1. Setup Instructions
 
-### A. Claude Desktop
-Edit your Claude Desktop configuration file:
-- **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
-- **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+### ⭐ Phương Pháp 1: Kết Nối Trực Tiếp Qua Web (Khuyên Dùng — Không cần Node.js local)
 
-Add the following block under `mcpServers`:
+Server MCP đã được triển khai online và hoạt động tại:
+`https://music.apexdev.website/mcp/sse`
 
+#### Cho Cursor IDE (`.cursor/mcp.json` hoặc `~/.cursor/mcp.json`):
 ```json
 {
   "mcpServers": {
     "vibedesk-music": {
-      "command": "/opt/homebrew/bin/node",
-      "args": [
-        "/Users/apexdev/Desktop/Projects/vibedesk-music/mcp-server/index.js"
-      ]
+      "url": "https://music.apexdev.website/mcp/sse"
+    }
+  }
+}
+```
+
+#### Cho Claude Desktop / Cline / Extension khác hỗ trợ Remote HTTP/SSE:
+```json
+{
+  "mcpServers": {
+    "vibedesk-music": {
+      "type": "sse",
+      "url": "https://music.apexdev.website/mcp/sse"
     }
   }
 }
@@ -36,8 +44,9 @@ Add the following block under `mcpServers`:
 
 ---
 
-### B. Cursor IDE
-Create or edit `.cursor/mcp.json` in your project root or `~/.cursor/mcp.json`:
+### 💻 Phương Pháp 2: Kết Nối Cục Bộ (Local Stdio)
+
+Dành cho khi phát triển offline trên máy Mac:
 
 ```json
 {
@@ -45,25 +54,10 @@ Create or edit `.cursor/mcp.json` in your project root or `~/.cursor/mcp.json`:
     "vibedesk-music": {
       "command": "/opt/homebrew/bin/node",
       "args": [
-        "/Users/apexdev/Desktop/Projects/vibedesk-music/mcp-server/index.js"
+        "/Users/apexdev/Desktop/Projects/vibedesk-music/mcp-server/index.js",
+        "--stdio"
       ]
     }
-  }
-}
-```
-
----
-
-### C. Antigravity / Gemini / Cline
-Add to your client MCP configuration:
-
-```json
-{
-  "vibedesk-music": {
-    "command": "/opt/homebrew/bin/node",
-    "args": [
-      "/Users/apexdev/Desktop/Projects/vibedesk-music/mcp-server/index.js"
-    ]
   }
 }
 ```

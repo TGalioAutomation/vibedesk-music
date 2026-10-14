@@ -1,10 +1,7 @@
 {
   "mcpServers": {
     "vibedesk-music": {
-      "command": "/opt/homebrew/bin/node",
-      "args": [
-        "/Users/apexdev/Desktop/Projects/vibedesk-music/mcp-server/index.js"
-      ]
+      "url": "https://music.apexdev.website/mcp/sse"
     }
   }
 }
