@@ -122,7 +122,7 @@ Located in `mcp-server/`, this Node.js MCP server connects directly to AI sessio
 1. Fork or import this repository on [Vercel](https://vercel.com/new).
 2. The project includes a pre-configured `vercel.json` with SPA routing rewrites and security headers (`X-Frame-Options`, `X-Content-Type-Options`, `Cache-Control`).
 3. *(Optional)* Add Environment Variables in Vercel project settings:
-   - `VITE_ADMIN_PIN`: Your custom 6-digit admin PIN (default: `123456`).
+   - `VITE_ADMIN_PIN`: Your custom admin PIN (default: `847491784`).
    - `VITE_ADMIN_SECRET_PATH`: Your secret hash route (default: `#/secret-vault`).
 4. Click **Deploy**. Your VibeDesk web player will be live immediately!
 

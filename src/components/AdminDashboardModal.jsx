@@ -155,9 +155,8 @@ export default function AdminDashboardModal({
 
   const currentSavedPin =
     localStorage.getItem('vibedesk_admin_pin') ||
-    localStorage.getItem('aurasound_admin_pin') ||
     import.meta.env.VITE_ADMIN_PIN ||
-    '123456';
+    '847491784';
 
   const handleVerifyPin = (e) => {
     e.preventDefault();
@@ -179,11 +178,11 @@ export default function AdminDashboardModal({
 
   const handleChangePin = (e) => {
     e.preventDefault();
-    if (newPin.length !== 6 || isNaN(newPin)) {
-      alert('Mã PIN phải bao gồm đúng 6 chữ số!');
+    if (newPin.trim().length < 4 || newPin.trim().length > 30) {
+      alert('Mã PIN/Mật khẩu phải từ 4 đến 30 ký tự!');
       return;
     }
-    localStorage.setItem('vibedesk_admin_pin', newPin);
+    localStorage.setItem('vibedesk_admin_pin', newPin.trim());
     setPinChangeSuccess(true);
     setNewPin('');
     setTimeout(() => setPinChangeSuccess(false), 3000);
@@ -379,11 +378,11 @@ export default function AdminDashboardModal({
             </div>
             <input
               type="password"
-              maxLength={6}
+              maxLength={30}
               disabled={lockoutTimer > 0}
               value={pin}
               onChange={(e) => setPin(e.target.value)}
-              placeholder={lockoutTimer > 0 ? `Bị khóa ${lockoutTimer}s...` : 'Nhập 6 số PIN...'}
+              placeholder={lockoutTimer > 0 ? `Bị khóa ${lockoutTimer}s...` : 'Nhập mã PIN quản trị...'}
               className="w-full text-center tracking-widest text-lg font-mono py-2.5 px-4 rounded-xl bg-white/5 border border-white/10 text-white focus:border-purple-500/60 focus:outline-none disabled:opacity-50"
             />
             {lockoutTimer > 0 ? (
@@ -878,9 +877,9 @@ export default function AdminDashboardModal({
                   <div className="flex gap-2">
                     <input
                       type="password"
-                      maxLength={6}
+                      maxLength={30}
                       required
-                      placeholder="Mã PIN mới (6 chữ số)..."
+                      placeholder="Mã PIN / Mật khẩu mới..."
                       value={newPin}
                       onChange={(e) => setNewPin(e.target.value)}
                       className="flex-1 px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-white font-mono text-xs focus:outline-none focus:border-purple-500/60"
