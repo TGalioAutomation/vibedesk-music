@@ -39,6 +39,23 @@ export default function AdminDashboardModal({
   const [pin, setPin] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pinError, setPinError] = useState(false);
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [lockoutTimer, setLockoutTimer] = useState(0);
+
+  // Lockout countdown timer effect
+  React.useEffect(() => {
+    if (lockoutTimer <= 0) return;
+    const interval = setInterval(() => {
+      setLockoutTimer((prev) => {
+        if (prev <= 1) {
+          setFailedAttempts(0);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [lockoutTimer]);
 
   // Settings: Custom PIN
   const [newPin, setNewPin] = useState('');
@@ -72,15 +89,27 @@ export default function AdminDashboardModal({
 
   if (!isOpen) return null;
 
-  const currentSavedPin = localStorage.getItem('aurasound_admin_pin') || '123456';
+  const currentSavedPin =
+    localStorage.getItem('vibedesk_admin_pin') ||
+    localStorage.getItem('aurasound_admin_pin') ||
+    import.meta.env.VITE_ADMIN_PIN ||
+    '123456';
 
   const handleVerifyPin = (e) => {
     e.preventDefault();
+    if (lockoutTimer > 0) return;
+
     if (pin === currentSavedPin) {
       setIsAuthenticated(true);
       setPinError(false);
+      setFailedAttempts(0);
     } else {
       setPinError(true);
+      const nextAttempts = failedAttempts + 1;
+      setFailedAttempts(nextAttempts);
+      if (nextAttempts >= 3) {
+        setLockoutTimer(60);
+      }
     }
   };
 
@@ -90,7 +119,7 @@ export default function AdminDashboardModal({
       alert('Mã PIN phải bao gồm đúng 6 chữ số!');
       return;
     }
-    localStorage.setItem('aurasound_admin_pin', newPin);
+    localStorage.setItem('vibedesk_admin_pin', newPin);
     setPinChangeSuccess(true);
     setNewPin('');
     setTimeout(() => setPinChangeSuccess(false), 3000);
@@ -264,7 +293,7 @@ export default function AdminDashboardModal({
           </div>
           <div>
             <h3 className="text-xl font-bold text-white font-['Space_Grotesk']">
-              AuraSound Admin Studio Pro
+              VibeDesk Admin Studio Pro
             </h3>
             <p className="text-xs text-slate-400">
               Quản trị toàn diện: Upload nhạc trực tiếp, phân tích chỉ số và quản lý hệ thống
@@ -281,26 +310,33 @@ export default function AdminDashboardModal({
             <div>
               <h4 className="text-base font-semibold text-white">Xác Thực Quản Trị Viên</h4>
               <p className="text-xs text-slate-400 mt-1">
-                Nhập mã PIN bí mật của Admin (Mặc định: <code className="text-purple-300 font-mono">123456</code>)
+                Nhập mã PIN bí mật của người quản trị deploy
               </p>
             </div>
             <input
               type="password"
               maxLength={6}
+              disabled={lockoutTimer > 0}
               value={pin}
               onChange={(e) => setPin(e.target.value)}
-              placeholder="Nhập 6 số..."
-              className="w-full text-center tracking-widest text-lg font-mono py-2.5 px-4 rounded-xl bg-white/5 border border-white/10 text-white focus:border-purple-500/60 focus:outline-none"
+              placeholder={lockoutTimer > 0 ? `Bị khóa ${lockoutTimer}s...` : 'Nhập 6 số PIN...'}
+              className="w-full text-center tracking-widest text-lg font-mono py-2.5 px-4 rounded-xl bg-white/5 border border-white/10 text-white focus:border-purple-500/60 focus:outline-none disabled:opacity-50"
             />
-            {pinError && (
+            {lockoutTimer > 0 ? (
+              <p className="text-xs text-amber-400 flex items-center justify-center gap-1 font-medium">
+                <AlertCircle className="w-3.5 h-3.5" />
+                <span>Nhập sai 3 lần. Vui lòng chờ {lockoutTimer}s</span>
+              </p>
+            ) : pinError ? (
               <p className="text-xs text-rose-400 flex items-center justify-center gap-1">
                 <AlertCircle className="w-3.5 h-3.5" />
-                <span>Mã PIN không đúng. Vui lòng thử lại!</span>
+                <span>Mã PIN không đúng ({failedAttempts}/3 lần thử).</span>
               </p>
-            )}
+            ) : null}
             <button
               type="submit"
-              className="w-full py-2.5 rounded-xl text-xs font-semibold bg-purple-600 hover:bg-purple-500 text-white transition-all shadow-lg shadow-purple-600/30"
+              disabled={lockoutTimer > 0}
+              className="w-full py-2.5 rounded-xl text-xs font-semibold bg-purple-600 hover:bg-purple-500 text-white transition-all shadow-lg shadow-purple-600/30 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Mở Khóa Quản Trị
             </button>

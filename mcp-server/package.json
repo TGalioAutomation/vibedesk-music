@@ -1,0 +1,16 @@
+{
+  "name": "vibedesk-mcp-server",
+  "version": "1.0.0",
+  "description": "Model Context Protocol (MCP) server for VibeDesk Music - Manage tracks, metadata, and auto-sync",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "vibedesk-mcp": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.5.0"
+  }
+}

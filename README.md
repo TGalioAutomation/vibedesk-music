@@ -46,24 +46,60 @@ Bấm nút **"Focus Decor (F)"** hoặc ấn phím **`F`** trên bàn phím:
 
 ---
 
-### 3. Dành Cho Admin (Admin Studio Pro)
-Bấm vào nút **"Admin Studio"** trên thanh menu (Mã PIN mặc định: `123456`):
-- **Kéo thả Upload trực tiếp:** Thả file `.mp3`, `.wav`, `.m4a` từ máy tính vào ô upload, lưu trữ trực tiếp vào `IndexedDB` của trình duyệt.
-- **Thống Kê Chỉ Số Toàn Diện:** Xem tổng lượt nghe, tổng giờ phát, tỷ lệ hoàn tất (%) và bảng xếp hạng Top 5 bài hát thịnh hành nhất.
-- **Quản lý danh sách:** Nút xóa bài hát, nút gắn cờ "Bài hát nổi bật" (Featured).
-- **Xuất file `playlist.json`:** Tải file cấu hình mới chỉ với 1 click để lưu trữ cố định.
+### 3. 🛡️ Cổng Quản Trị Viên Ẩn (Stealth Admin Gateway & Security)
+Để giữ giao diện công khai tinh tế, sạch sẽ và tối mật:
+- **Ẩn 100% trên giao diện:** Người nghe bình thường tuyệt đối không thấy bất kỳ nút hoặc đường dẫn Admin nào.
+- **Đường dẫn bí mật dành cho người Deploy:**
+  - Truy cập URL bí mật: `https://your-domain.com/#/secret-vault` (hoặc `http://localhost:5173/#/secret-vault`).
+  - Hoặc dùng tham số query: `https://your-domain.com/?vault=true`
+  - Hoặc nhấn tổ hợp phím tắt bí mật của Deployer: **`Ctrl + Alt + A`**
+- **Cơ Chế Bảo Mật & Chống Dò Mã (Brute-force Lockout):**
+  - Xác thực bằng mã PIN quản trị viên (có thể đổi trực tiếp trong mục Cài đặt Studio hoặc qua biến môi trường `VITE_ADMIN_PIN`).
+  - Tự động khóa bảng điều khiển 60 giây nếu nhập sai 3 lần liên tiếp.
+  - Tự động xóa sạch URL bí mật trên thanh địa chỉ trình duyệt khi đóng bảng điều khiển để tránh bị lộ.
+- **Tính năng trong Admin Studio:**
+  - Kéo thả upload nhạc trực tiếp vào `IndexedDB`.
+  - Bảng thống kê chỉ số: Lượt nghe, thời lượng phát, tỷ lệ hoàn thành, Top bài hát.
+  - Xuất file cấu hình `playlist.json`.
 
 ---
 
-## 🚀 Khởi Chạy Dự Án
+### 4. 🎛️ AI Model Context Protocol (MCP Server)
+Dự án đi kèm máy chủ MCP tại thư mục `mcp-server/` cho phép kết nối trực tiếp vào AI session (Claude Desktop, Cursor, Antigravity) để:
+- Tự động ra lệnh cho AI tìm kiếm, chọn lọc nhạc và thêm vào `playlist.json`.
+- Tự động cập nhật ảnh bìa Unsplash và lời bài hát.
+- Tự động chạy tool `vibedesk_git_sync` để commit và push lên GitHub, kích hoạt Vercel tự build live!
+👉 *Xem chi tiết cài đặt tại [mcp-server/README.md](file:///c:/Users/svphu/Desktop/webapp-nghe-nhac/mcp-server/README.md).*
 
-### 1. Khởi chạy môi trường phát triển (Dev Server)
+---
+
+## 🚀 Triển Khai Lên Production (Deploy Guides)
+
+### Cách 1: Triển khai lên Vercel (Khuyên dùng — 1 Click)
+1. Truy cập [Vercel](https://vercel.com/) và liên kết kho mã nguồn `TGalioAutomation/vibedesk-music`.
+2. Dự án đã cấu hình sẵn file `vercel.json` (hỗ trợ SPA Rewrites, Cache Control và Security Headers).
+3. (Tùy chọn) Thêm biến môi trường trong Vercel Settings:
+   - `VITE_ADMIN_PIN`: Mã PIN 6 số bí mật của bạn.
+   - `VITE_ADMIN_SECRET_PATH`: Đường dẫn bí mật (mặc định: `#/secret-vault`).
+4. Bấm **Deploy** — Website sẽ hoạt động tức thì với tên miền miễn phí `xxx.vercel.app`!
+
+### Cách 2: Triển khai lên Cloudflare Pages / Netlify
+- Đã có sẵn file `public/_redirects` với cấu hình `/* /index.html 200`.
+- Build command: `npm run build`
+- Output directory: `dist`
+
+---
+
+## 💻 Khởi Chạy Cục Bộ (Local Development)
+
 ```bash
+# Cài đặt thư viện
+npm install
+
+# Chạy server phát triển
 npm run dev
-```
-Sau đó mở trình duyệt tại: `http://localhost:5173/`
 
-### 2. Đóng gói cho Production
-```bash
+# Đóng gói sản phẩm
 npm run build
 ```
+Mở trình duyệt tại: `http://localhost:5173/` (Nhấn phím `F` để vào Focus Decor, truy cập `/#/secret-vault` để mở Admin).

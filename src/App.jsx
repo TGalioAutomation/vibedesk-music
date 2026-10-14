@@ -162,8 +162,58 @@ export default function App() {
 
   // Save tracks to LocalStorage whenever updated by Admin
   useEffect(() => {
+    localStorage.setItem('vibedesk_admin_tracks', JSON.stringify(tracks));
     localStorage.setItem('aurasound_admin_tracks', JSON.stringify(tracks));
   }, [tracks]);
+
+  // Stealth Admin Route & Secret Shortcut Detector
+  useEffect(() => {
+    const checkAdminRoute = () => {
+      const hash = window.location.hash.toLowerCase();
+      const params = new URLSearchParams(window.location.search);
+      const secretPath = (import.meta.env.VITE_ADMIN_SECRET_PATH || '#/secret-vault').toLowerCase();
+
+      if (
+        hash === secretPath ||
+        hash === '#/secret-vault' ||
+        hash === '#/admin-vault' ||
+        params.get('vault') === 'true' ||
+        params.get('admin') === 'vibedesk'
+      ) {
+        setIsAdminDashboardOpen(true);
+      }
+    };
+
+    checkAdminRoute();
+    window.addEventListener('hashchange', checkAdminRoute);
+    window.addEventListener('popstate', checkAdminRoute);
+
+    // Deployer secret shortcut: Ctrl+Alt+A or Ctrl+Shift+A
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.altKey && (e.key === 'a' || e.key === 'A')) {
+        e.preventDefault();
+        setIsAdminDashboardOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('hashchange', checkAdminRoute);
+      window.removeEventListener('popstate', checkAdminRoute);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
+  const handleCloseAdminDashboard = () => {
+    setIsAdminDashboardOpen(false);
+    if (
+      window.location.hash ||
+      window.location.search.includes('vault') ||
+      window.location.search.includes('admin')
+    ) {
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+  };
 
   // Initialize Web Audio API on first user interaction
   const initAudioContext = () => {
@@ -637,7 +687,7 @@ export default function App() {
       {/* Admin Studio Pro Dashboard Modal */}
       <AdminDashboardModal
         isOpen={isAdminDashboardOpen}
-        onClose={() => setIsAdminDashboardOpen(false)}
+        onClose={handleCloseAdminDashboard}
         tracks={tracks}
         onAddTrack={handleAddTrack}
         onDeleteTrack={handleDeleteTrack}
