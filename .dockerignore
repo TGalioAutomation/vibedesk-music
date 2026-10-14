@@ -1,0 +1,12 @@
+node_modules
+dist
+dist-ssr
+.git
+.github
+.agents
+.gemini
+.claude
+*.log
+.DS_Store
+.env.local
+.env.*.local
