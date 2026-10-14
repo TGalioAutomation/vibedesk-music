@@ -1,0 +1,86 @@
+{
+  "curator": "Admin SoundLab",
+  "version": "1.2.0",
+  "updatedAt": "2026-10-14",
+  "categories": ["All", "Lofi & Chill", "Cyber Synth", "Piano & Acoustic", "Deep Focus"],
+  "tracks": [
+    {
+      "id": "trk-01",
+      "title": "Midnight Tokyo Rain",
+      "artist": "Aura Chill",
+      "album": "Neon Serenity",
+      "duration": 214,
+      "genre": "Lofi & Chill",
+      "accentColor": "#8b5cf6",
+      "cover": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80",
+      "audioUrl": "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3",
+      "lyrics": "Quiet rain tapping on the glass...\nNeon lights bleeding through the mist...\nA warm cup of coffee in hand...\nLet the night wash away the noise.",
+      "featured": true
+    },
+    {
+      "id": "trk-02",
+      "title": "Starlight Cyber Horizon",
+      "artist": "Kavinsky Wave",
+      "album": "Retro 2088",
+      "duration": 188,
+      "genre": "Cyber Synth",
+      "accentColor": "#ec4899",
+      "cover": "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=800&auto=format&fit=crop&q=80",
+      "audioUrl": "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=electronic-future-beats-117997.mp3",
+      "lyrics": "Cruising through the cyber highway...\nPurple skies and chrome reflections...\nEngine humming at 120 bpm...\nLost in the frequency.",
+      "featured": true
+    },
+    {
+      "id": "trk-03",
+      "title": "Silent Snowfall in Kyoto",
+      "artist": "Hana Mori",
+      "album": "Zen Garden",
+      "duration": 195,
+      "genre": "Piano & Acoustic",
+      "accentColor": "#06b6d4",
+      "cover": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&auto=format&fit=crop&q=80",
+      "audioUrl": "https://cdn.pixabay.com/download/audio/2022/11/06/audio_c97693cf63.mp3?filename=reflected-light-147724.mp3",
+      "lyrics": "Snow flakes drifting softly...\nWooden wind chimes whisper...\nPiano chords resonating peace...\nBreathe in, breathe out.",
+      "featured": false
+    },
+    {
+      "id": "trk-04",
+      "title": "Deep Neural Flow",
+      "artist": "Synapse Labs",
+      "album": "Theta Waves",
+      "duration": 242,
+      "genre": "Deep Focus",
+      "accentColor": "#10b981",
+      "cover": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80",
+      "audioUrl": "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3?filename=ambient-piano-amp-strings-10711.mp3",
+      "lyrics": "Deep sub bass frequencies...\nEntering hyper-focused state...\nCode flowing effortlessly...\nTime dissolves completely.",
+      "featured": false
+    },
+    {
+      "id": "trk-05",
+      "title": "Coffee Shop in Da Lat",
+      "artist": "Minh & The Clouds",
+      "album": "Highland Breeze",
+      "duration": 178,
+      "genre": "Piano & Acoustic",
+      "accentColor": "#f59e0b",
+      "cover": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800&auto=format&fit=crop&q=80",
+      "audioUrl": "https://cdn.pixabay.com/download/audio/2022/10/14/audio_9939f77cb7.mp3?filename=acoustic-guitar-loop-f-91bpm-124046.mp3",
+      "lyrics": "Misty hills outside the window...\nScent of roasted Arabica beans...\nAcoustic strings strumming slow...\nPeace in the mountain air.",
+      "featured": true
+    },
+    {
+      "id": "trk-06",
+      "title": "Subway Sunset Lofi",
+      "artist": "Metro Melodies",
+      "album": "Urban Wanderer",
+      "duration": 204,
+      "genre": "Lofi & Chill",
+      "accentColor": "#f43f5e",
+      "cover": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80",
+      "audioUrl": "https://cdn.pixabay.com/download/audio/2022/02/07/audio_4da58e37d5.mp3?filename=lofi-vibes-110052.mp3",
+      "lyrics": "Riding the last train home...\nSun slipping beneath the horizon...\nHeadphones turned up high...\nAnother day well lived.",
+      "featured": false
+    }
+  ]
+}
