@@ -1,105 +1,208 @@
-# 🎵 VibeDesk Music — Minimalist Vinyl Player & Ambient Focus Decor (Zero-Login)
+# 🎵 VibeDesk Music — Minimalist Vinyl Player & Ambient Focus Decor
 
-Giao diện nghe nhạc đỉnh cao phong cách **Luxury Dark Glassmorphism** kết hợp **Đĩa than Vinyl xoay**, **Real-time Audio Spectrum Visualizer**, chế độ **Comodoro / Pomodoro Focus Decor Fullscreen** và bộ công cụ **Admin Studio Pro**. Người nghe không cần tạo tài khoản hay đăng nhập, truy cập là thưởng thức ngay lập tức!
+[![React](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-6.0-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Model Context Protocol](https://img.shields.io/badge/MCP-Compatible-9333ea?style=for-the-badge&logo=anthropic&logoColor=white)](https://modelcontextprotocol.io/)
+[![Zero Login](https://img.shields.io/badge/Zero--Login-Frictionless-10b981?style=for-the-badge)](https://github.com/TGalioAutomation/vibedesk-music)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
----
+**VibeDesk Music** is a luxury, zero-friction web music player designed for modern desk setups, deep focus sessions, and aesthetic screen decor. Featuring an interactive spinning vinyl turntable, real-time audio spectrum visualizer, a Zen Pomodoro countdown with Solfeggio 528Hz bowl chimes, five immersive dynamic background themes, a stealth administrative gateway, and an AI-driven Model Context Protocol (MCP) server for automated music curation.
 
-## ✨ Tính Năng Nổi Bật
-
-### 1. 🍅 Comodoro / Pomodoro Zen Focus Decor (Toàn Màn Hình Trang Trí)
-Bấm nút **"Focus Decor (F)"** hoặc ấn phím **`F`** trên bàn phím:
-- **Đồng hồ Comodoro / Pomodoro nghệ thuật:**
-  - 🎯 **25m Tập trung sâu (Deep Focus)**
-  - ☕ **5m Nghỉ ngắn (Short Break)**
-  - 🌴 **15m Nghỉ dài (Long Break)**
-- **5 Phong Cách Hình Nền Nghệ Thuật (Background Styles):** Bấm nút **"Hình Nền"** ở góc phải trên:
-  - ✨ **Album Glow (Mặc định):** Ánh sáng neon hào quang tỏa từ bìa đĩa bài hát đang phát.
-  - 🌧️ **Rainy Window:** Kính đọng hạt mưa và ánh đèn thành phố mờ ảo, cảm giác lãng mạn.
-  - ⚡ **Cyberpunk Grid:** Lưới viễn tưởng Synthwave phong cách retro 80s với chân trời hoàng hôn.
-  - 🌌 **Deep Nebula:** Tinh vân vũ trụ sâu thẳm chuyển màu huyền bí.
-  - 🖤 **OLED Minimalist:** Nền đen tuyệt đối tiết kiệm pin, cực kỳ sắc nét trên màn hình OLED.
-- **Drawer Danh Sách Nhạc Nhanh (Quick Playlist Drawer):**
-  - Bấm nút **"Chọn Nhạc"** (`ListMusic`) trên thanh điều khiển Focus:
-  - Khay trượt tinh tế mở từ cạnh phải màn hình với thanh tìm kiếm bài hát tức thì.
-  - Chọn bài nghe trực tiếp mà **không cần thoát** khỏi chế độ Fullscreen Decor.
-  - Hiệu ứng sóng nhạc nhảy theo nhịp trên bài hát đang phát.
-- **Vòng tròn tiến trình SVG Neon (Circular Progress Ring):** Vòng ánh sáng co lại mượt mà theo thời gian thực tương ứng với % thời gian còn lại.
-- **Chuông thiền Zen Chime:** Tự động phát âm thanh chuông bát tây tạng tần số sóng Solfeggio 528Hz nhẹ nhàng khi hết phiên để nhắc bạn nghỉ ngơi.
-- **Bộ đếm phiên làm việc:** Ghi nhớ số phiên Pomodoro đã hoàn thành hôm nay (`🍅 3 Phiên`).
-- **Chuyển đổi linh hoạt:** 1-click chuyển đổi giữa **Đồng hồ đếm ngược Pomodoro** $\leftrightarrow$ **Đồng hồ thời gian thực (`HH:MM:SS`)**.
-- **Cơ chế Auto-Hide:** Tự động ẩn thanh công cụ và con trỏ chuột (`cursor: none`) khi không chạm sau 3.5 giây để giữ trọn vẻ đẹp trang trí trên bàn làm việc (tự động giữ hiển thị khi đang mở Drawer hoặc Menu hình nền).
+> 🌟 **Zero-Login Experience:** No accounts, no subscriptions, no tracking. Open the page and enjoy curated music in under 3 seconds.
 
 ---
 
-### 2. Dành Cho Người Nghe
-- **Zero-Friction / Không Cần Login:** Truy cập là phát nhạc ngay trong 3 giây.
-- **Ambient Sound Mixer (Hòa âm thư giãn):** Nút **"Hòa âm"** kết hợp thêm tiếng mưa rơi (Rain), tiếng sóng biển (Ocean Waves), hoặc tiếng lửa trại quán cafe (Cafe Ambient) hòa cùng bài nhạc đang phát.
-- **Sleep Timer (Hẹn giờ tắt nhạc):** Tùy chọn hẹn giờ 15p, 30p, 45p, 60p hoặc Hết bài hát, tự động giảm dần âm lượng (Fade-out) trong 15s cuối.
-- **Phím Tắt Bàn Phím Toàn Cục:**
-  - `F`: Bật / Tắt Focus Decor toàn màn hình.
-  - `Space`: Phát / Tạm dừng.
-  - `M`: Tắt / Bật tiếng.
-  - `Mũi tên Phải / Trái`: Chuyển bài kế tiếp / Quay lại bài trước.
-  - `Mũi tên Lên / Xuống`: Tăng / Giảm 5% âm lượng.
-- **Media Session API:** Hiển thị bài hát, bìa album và điều khiển phát nhạc trên màn hình khóa điện thoại, thông báo Windows và tai nghe Bluetooth.
-- **Cá Nhân Hóa Cục Bộ:** Lưu danh sách bài hát yêu thích (Favorites) và mức âm lượng vào `LocalStorage`.
+## 📸 Preview & Highlights
+
+- **Luxury Dark Glassmorphism:** Translucent frosted glass panels, neon accents, and smooth physics.
+- **Spinning Vinyl Record:** Realistic turntable with album art center labels, tone arm positioning, and spinning animation synced to audio playback.
+- **Real-Time Spectrum Visualizer:** Canvas-rendered Web Audio API frequencies dancing to every beat.
+- **Comodoro / Pomodoro Zen Focus Decor:** Fullscreen desktop centerpiece with circular SVG glow ring, Tibetan singing bowl chimes, and auto-hiding interface.
+- **5 Dynamic Background Styles:** Album Glow, Rainy Window, Cyberpunk Grid, Deep Nebula, and pure OLED Minimalist.
+- **Quick Playlist Drawer:** Seamless slide-out right drawer with instant search and live equalizer without leaving fullscreen mode.
+- **Ambient Sound Mixer:** Blend soothing sounds of soft rain, ocean waves, or a cozy cafe fireplace over the current track.
+- **Sleep Timer & Fade-Out:** Gentle volume attenuation over the final 15 seconds.
+- **Stealth Admin Gateway:** Fully hidden from public view; accessible only via secret route (`/#/secret-vault`) or shortcut (`Ctrl+Alt+A`) with brute-force lockout protection.
+- **AI-Powered MCP Server:** Direct bridge for AI assistants (Claude, Cursor, Antigravity) to curate tracks, update album art, and auto-deploy to GitHub.
 
 ---
 
-### 3. 🛡️ Cổng Quản Trị Viên Ẩn (Stealth Admin Gateway & Security)
-Để giữ giao diện công khai tinh tế, sạch sẽ và tối mật:
-- **Ẩn 100% trên giao diện:** Người nghe bình thường tuyệt đối không thấy bất kỳ nút hoặc đường dẫn Admin nào.
-- **Đường dẫn bí mật dành cho người Deploy:**
-  - Truy cập URL bí mật: `https://your-domain.com/#/secret-vault` (hoặc `http://localhost:5173/#/secret-vault`).
-  - Hoặc dùng tham số query: `https://your-domain.com/?vault=true`
-  - Hoặc nhấn tổ hợp phím tắt bí mật của Deployer: **`Ctrl + Alt + A`**
-- **Cơ Chế Bảo Mật & Chống Dò Mã (Brute-force Lockout):**
-  - Xác thực bằng mã PIN quản trị viên (có thể đổi trực tiếp trong mục Cài đặt Studio hoặc qua biến môi trường `VITE_ADMIN_PIN`).
-  - Tự động khóa bảng điều khiển 60 giây nếu nhập sai 3 lần liên tiếp.
-  - Tự động xóa sạch URL bí mật trên thanh địa chỉ trình duyệt khi đóng bảng điều khiển để tránh bị lộ.
-- **Tính năng trong Admin Studio:**
-  - Kéo thả upload nhạc trực tiếp vào `IndexedDB`.
-  - Bảng thống kê chỉ số: Lượt nghe, thời lượng phát, tỷ lệ hoàn thành, Top bài hát.
-  - Xuất file cấu hình `playlist.json`.
+## ✨ Features Deep-Dive
+
+### 1. 🍅 Comodoro / Pomodoro Zen Focus Decor (Fullscreen)
+Press **`F`** on your keyboard or click the **"Focus Decor (F)"** button to enter fullscreen desktop decor mode:
+- **Artistic Interval Modes:**
+  - 🎯 **Deep Focus (25m):** Distraction-free work sprint.
+  - ☕ **Short Break (5m):** Relax and recharge.
+  - 🌴 **Long Break (15m):** Extended rest period.
+- **Circular SVG Neon Ring:** Progress ring smoothly contracts in real-time corresponding to cycle percentage.
+- **Solfeggio 528Hz Zen Chime:** Gentle Tibetan singing bowl bell rings automatically when a session ends to alert you without jarring noise.
+- **Session Counter:** Records completed Pomodoro cycles throughout the day (`🍅 3 Cycles`).
+- **One-Click Switch:** Toggle seamlessly between **Pomodoro Countdown** $\leftrightarrow$ **Real-Time Clock (`HH:MM:SS`)**.
+- **Smart Auto-Hide:** Cursor and controls automatically hide after 3.5 seconds of inactivity (`cursor: none`), staying active when menus or the playlist drawer are open.
 
 ---
 
-### 4. 🎛️ AI Model Context Protocol (MCP Server)
-Dự án đi kèm máy chủ MCP tại thư mục `mcp-server/` cho phép kết nối trực tiếp vào AI session (Claude Desktop, Cursor, Antigravity) để:
-- Tự động ra lệnh cho AI tìm kiếm, chọn lọc nhạc và thêm vào `playlist.json`.
-- Tự động cập nhật ảnh bìa Unsplash và lời bài hát.
-- Tự động chạy tool `vibedesk_git_sync` để commit và push lên GitHub, kích hoạt Vercel tự build live!
-👉 *Xem chi tiết cài đặt tại [mcp-server/README.md](file:///c:/Users/svphu/Desktop/webapp-nghe-nhac/mcp-server/README.md).*
+### 2. 🎨 5 Aesthetic Background Styles
+Switch themes via the **"Hình Nền / Background"** palette menu in fullscreen mode:
+1. ✨ **Album Glow (Default):** Vibrant neon aura cast dynamically from the current song's album art and accent color.
+2. 🌧️ **Rainy Window:** Atmospheric night rain streaming down a misty window with blurred city lights.
+3. ⚡ **Cyberpunk Grid:** Retro 80s synthwave horizon with moving neon grid lines and purple/pink gradients.
+4. 🌌 **Deep Nebula:** Cosmic galaxy clouds with slow, hypnotic radial color shifts.
+5. 🖤 **OLED Minimalist:** Pure true-black background to maximize battery life and eliminate distractions on OLED displays.
 
 ---
 
-## 🚀 Triển Khai Lên Production (Deploy Guides)
-
-### Cách 1: Triển khai lên Vercel (Khuyên dùng — 1 Click)
-1. Truy cập [Vercel](https://vercel.com/) và liên kết kho mã nguồn `TGalioAutomation/vibedesk-music`.
-2. Dự án đã cấu hình sẵn file `vercel.json` (hỗ trợ SPA Rewrites, Cache Control và Security Headers).
-3. (Tùy chọn) Thêm biến môi trường trong Vercel Settings:
-   - `VITE_ADMIN_PIN`: Mã PIN 6 số bí mật của bạn.
-   - `VITE_ADMIN_SECRET_PATH`: Đường dẫn bí mật (mặc định: `#/secret-vault`).
-4. Bấm **Deploy** — Website sẽ hoạt động tức thì với tên miền miễn phí `xxx.vercel.app`!
-
-### Cách 2: Triển khai lên Cloudflare Pages / Netlify
-- Đã có sẵn file `public/_redirects` với cấu hình `/* /index.html 200`.
-- Build command: `npm run build`
-- Output directory: `dist`
+### 3. 📋 Quick Playlist Drawer
+Click the **"Chọn Nhạc / Tracks"** button in fullscreen focus mode:
+- **Right Slide-Out Drawer:** Browse and change songs without exiting fullscreen mode or interrupting your visual vibe.
+- **Instant Search:** Filter songs instantly by title, artist, or genre.
+- **Live Equalizer Bar:** Visual pulsing bars show which track is currently playing.
+- **Smart Mouse Awakening:** Keeps controls visible while the drawer is open.
 
 ---
 
-## 💻 Khởi Chạy Cục Bộ (Local Development)
+### 4. ☕ Ambient Sound Mixer & Sleep Timer
+- **Ambient Sound Mixer:** Layer natural background noise on top of any music:
+  - 🌧️ Soft Rain (*Mưa Rơi Êm Dịu*)
+  - 🌊 Ocean Waves (*Sóng Biển Rì Rào*)
+  - 🔥 Fireplace & Cafe Ambience (*Lửa Trại & Quán Cafe*)
+- **Sleep Timer:** Set timer for 15m, 30m, 45m, 60m, or End-of-Track with an automated 15-second acoustic fade-out.
 
+---
+
+### 5. 🛡️ Stealth Admin Gateway & Security
+To keep the public interface clean and secure for general visitors:
+- **Zero Public Exposure:** The public UI contains no admin buttons, login triggers, or management links.
+- **Deployer Secret Access:**
+  - Access via URL: `https://your-domain.com/#/secret-vault` (or `?vault=true`)
+  - Or trigger anywhere with deployer shortcut: **`Ctrl + Alt + A`**
+  - Closing the modal automatically cleans the URL back to `/` so your secret route is never exposed to onlookers.
+- **Brute-Force Lockout Protection:**
+  - Protected with a 6-digit PIN (customizable in Studio Settings or via `VITE_ADMIN_PIN` env variable).
+  - Entering an incorrect PIN 3 times locks the console for **60 seconds** with an active cooldown timer.
+- **Client-Side Media Storage (`IndexedDB`):**
+  - Drag and drop `.mp3`, `.wav`, or `.m4a` files directly from your computer. Media blobs are stored securely in browser `IndexedDB`.
+  - Export new configuration files as `playlist.json` with a single click.
+
+---
+
+### 6. 🎛️ AI-Powered MCP Server (Model Context Protocol)
+Located in `mcp-server/`, this Node.js MCP server connects directly to AI sessions (Claude Desktop, Cursor, Antigravity):
+- `vibedesk_list_tracks`: Retrieve the current playlist structure and metadata.
+- `vibedesk_add_track`: Add new curated songs with lyrics, genre, and album art.
+- `vibedesk_update_track`: Modify titles, covers, and audio sources.
+- `vibedesk_delete_track`: Delete tracks by ID.
+- `vibedesk_batch_import`: Bulk-import tracks generated by AI.
+- `vibedesk_git_sync`: Automatically stage, commit, and push updates to GitHub, triggering instant CI/CD deployment on Vercel!
+
+👉 *For detailed configuration, see [mcp-server/README.md](mcp-server/README.md).*
+
+---
+
+## ⌨️ Global Keyboard Shortcuts
+
+| Key | Action |
+| :--- | :--- |
+| **`F`** | Toggle Fullscreen Focus Decor Mode |
+| **`Space`** | Play / Pause |
+| **`M`** | Mute / Unmute Audio |
+| **`→` (Right Arrow)** | Skip to Next Track |
+| **`←` (Left Arrow)** | Return to Previous Track / Restart Track |
+| **`↑` / `↓` (Up / Down)** | Increase / Decrease Volume by 5% |
+| **`Ctrl + Alt + A`** | Open Stealth Admin Studio Gateway |
+| **`Esc`** | Exit Fullscreen Mode / Close Modals |
+
+---
+
+## 🚀 One-Click Deployment
+
+### Deploy to Vercel (Recommended)
+1. Fork or import this repository on [Vercel](https://vercel.com/new).
+2. The project includes a pre-configured `vercel.json` with SPA routing rewrites and security headers (`X-Frame-Options`, `X-Content-Type-Options`, `Cache-Control`).
+3. *(Optional)* Add Environment Variables in Vercel project settings:
+   - `VITE_ADMIN_PIN`: Your custom 6-digit admin PIN (default: `123456`).
+   - `VITE_ADMIN_SECRET_PATH`: Your secret hash route (default: `#/secret-vault`).
+4. Click **Deploy**. Your VibeDesk web player will be live immediately!
+
+### Deploy to Cloudflare Pages or Netlify
+- The project includes `public/_redirects` (`/* /index.html 200`) for seamless single-page application routing.
+- **Build Command:** `npm run build`
+- **Output Directory:** `dist`
+
+---
+
+## 💻 Local Development Setup
+
+### Prerequisites
+- Node.js v18+ (tested on Node LTS v24)
+- npm or pnpm
+
+### Quick Start
 ```bash
-# Cài đặt thư viện
+# 1. Clone repository
+git clone git@github.com:TGalioAutomation/vibedesk-music.git
+cd vibedesk-music
+
+# 2. Install dependencies
 npm install
 
-# Chạy server phát triển
+# 3. Start local Vite development server
 npm run dev
 
-# Đóng gói sản phẩm
+# 4. Build for production
 npm run build
 ```
-Mở trình duyệt tại: `http://localhost:5173/` (Nhấn phím `F` để vào Focus Decor, truy cập `/#/secret-vault` để mở Admin).
+
+Open your browser at **`http://localhost:5173/`**:
+- Press **`F`** to test Focus Decor Mode.
+- Visit **`http://localhost:5173/#/secret-vault`** (or press **`Ctrl+Alt+A`**) to open Admin Studio.
+
+---
+
+## 📦 Project Structure
+
+```text
+vibedesk-music/
+├── mcp-server/                  # Model Context Protocol server for AI automation
+│   ├── index.js                 # Stdio MCP server with track management tools
+│   ├── package.json             # @modelcontextprotocol/sdk dependency
+│   └── README.md                # AI connection guide (Claude, Cursor, Antigravity)
+├── public/                      # Static assets & redirect rules
+│   ├── _redirects               # Cloudflare Pages / Netlify SPA rewrites
+│   └── music/                   # Sample audio documentation
+├── src/
+│   ├── components/
+│   │   ├── AdminDashboardModal.jsx   # Studio Pro (Upload, Analytics, PIN gate)
+│   │   ├── AdminInfoModal.jsx        # Admin quick guide
+│   │   ├── AmbientMixerModal.jsx     # Ambient sound mixer
+│   │   ├── BottomPlayerBar.jsx       # Floating dark glassmorphism player
+│   │   ├── FocusDecorView.jsx        # Fullscreen Pomodoro + 5 BG themes + Drawer
+│   │   ├── FullscreenVisualizer.jsx  # Audio spectrum particle visualizer
+│   │   ├── Navbar.jsx                # Clean public navigation & category pills
+│   │   ├── SleepTimerModal.jsx       # Sleep timer & acoustic fade-out
+│   │   ├── TrackCard.jsx             # Grid track cards with active indicators
+│   │   ├── VinylPlayer.jsx           # Centerpiece spinning turntable
+│   │   └── VisualizerCanvas.jsx      # Canvas audio waveform visualizer
+│   ├── data/
+│   │   └── playlist.json             # Core curated tracks and categories
+│   ├── hooks/
+│   │   └── useKeyboardAndMediaSession.js  # Keyboard shortcuts & Media Session API
+│   ├── services/
+│   │   ├── analytics.js              # Play counts, telemetry & completion stats
+│   │   └── storage.js                # IndexedDB persistence for uploaded media
+│   ├── App.jsx                       # Main application state & stealth router
+│   ├── index.css                     # Tailwind styling & glassmorphism filters
+│   └── main.jsx                      # Vite React root
+├── package.json
+├── vercel.json                  # Vercel SPA rewrites & security headers
+├── tailwind.config.js
+└── vite.config.js
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE). Feel free to fork, customize, and deploy your own aesthetic focus music hub!

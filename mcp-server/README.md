@@ -1,23 +1,25 @@
 # 🎛️ VibeDesk MCP Server (Model Context Protocol)
 
-Máy chủ **MCP (Model Context Protocol)** dành riêng cho dự án **VibeDesk Music**. 
-Cho phép bất kỳ AI Assistant nào (Claude Desktop, Cursor, Antigravity, Gemini, Cline) kết nối trực tiếp vào phiên làm việc để:
-- 🎵 **Tự động thêm nhạc mới** (`vibedesk_add_track`) kèm metadata chuẩn (tên, nghệ sĩ, link mp3, ảnh bìa, thể loại, màu neon, lời bài hát).
-- 🖼️ **Cập nhật thông tin & ảnh bìa** (`vibedesk_update_track`).
-- 🗑️ **Xóa bài hát khỏi playlist** (`vibedesk_delete_track`).
-- 📋 **Đọc toàn bộ danh sách nhạc** (`vibedesk_list_tracks`).
-- 🚀 **Auto-Deploy Git Push** (`vibedesk_git_sync`): Tự động tạo git commit và đẩy trực tiếp lên GitHub để kích hoạt Vercel/Cloudflare Pages tự động build lại website.
+The **VibeDesk MCP Server** enables any AI assistant (Claude Desktop, Cursor, Antigravity, Cline) to connect directly to the **VibeDesk Music** codebase over standard JSON-RPC (stdio transport).
+
+With this server connected, your AI assistant can autonomously:
+- 🎵 **Add new songs** (`vibedesk_add_track`) with verified audio URLs, Unsplash album covers, genres, lyrics, and neon accent colors.
+- 🖼️ **Update track metadata & artwork** (`vibedesk_update_track`).
+- 🗑️ **Delete tracks** (`vibedesk_delete_track`).
+- 📋 **Inspect current playlist** (`vibedesk_list_tracks`).
+- 📦 **Batch-import tracks** (`vibedesk_batch_import`).
+- 🚀 **Trigger Git Auto-Deploy** (`vibedesk_git_sync`): Stages `src/data/playlist.json`, commits, and pushes to GitHub `main` branch to immediately trigger production CI/CD redeployment on Vercel or Cloudflare Pages.
 
 ---
 
-## 🛠️ 1. Hướng Dẫn Cấu Hình Kết Nối Vào AI
+## 🛠️ 1. Setup Instructions
 
-### A. Dành Cho Claude Desktop
-Mở file cấu hình của Claude Desktop tại:
+### A. Claude Desktop
+Edit your Claude Desktop configuration file:
 - **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
 - **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
 
-Thêm cấu hình sau vào mục `mcpServers`:
+Add the following block under `mcpServers`:
 
 ```json
 {
@@ -34,15 +36,17 @@ Thêm cấu hình sau vào mục `mcpServers`:
 
 ---
 
-### B. Dành Cho Cursor IDE
-Mở file `.cursor/mcp.json` trong dự án của bạn (hoặc vào `Cursor Settings` -> `Features` -> `MCP`):
+### B. Cursor IDE
+Create or edit `.cursor/mcp.json` in your project root (or navigate to `Cursor Settings` -> `Features` -> `MCP`):
 
 ```json
 {
   "mcpServers": {
     "vibedesk": {
       "command": "node",
-      "args": ["c:/Users/svphu/Desktop/webapp-nghe-nhac/mcp-server/index.js"]
+      "args": [
+        "c:/Users/svphu/Desktop/webapp-nghe-nhac/mcp-server/index.js"
+      ]
     }
   }
 }
@@ -50,36 +54,39 @@ Mở file `.cursor/mcp.json` trong dự án của bạn (hoặc vào `Cursor Set
 
 ---
 
-### C. Dành Cho Antigravity
-Cấu hình trong `mcp_config.json`:
+### C. Antigravity / Gemini
+Add to your `mcp_config.json`:
 
 ```json
 {
   "vibedesk": {
     "command": "node",
-    "args": ["c:/Users/svphu/Desktop/webapp-nghe-nhac/mcp-server/index.js"]
+    "args": [
+      "c:/Users/svphu/Desktop/webapp-nghe-nhac/mcp-server/index.js"
+    ]
   }
 }
 ```
 
 ---
 
-## 💬 2. Câu Lệnh Mẫu Để Ra Lệnh Cho AI
+## 💬 2. Example Natural Language AI Prompts
 
-Sau khi nối MCP vào session, bạn chỉ cần chat tự nhiên với AI:
+Once the MCP server is configured in your AI assistant, you can instruct it in natural conversation:
 
-### Ví dụ 1: Thêm bài hát mới
-> *"AI ơi, tôi có bài hát mới tên là 'Sài Gòn Mưa Đêm', nghệ sĩ 'Lofi Chill Lab', link audio là 'https://cdn.example.com/saigon-rain.mp3', thể loại 'Lofi & Chill'. Hãy thêm vào playlist VibeDesk và chọn một ảnh bìa mưa đêm đẹp mắt."*
+### Example 1: Add a New Track
+> *"Hey AI, I found a great lofi track: 'https://cdn.pixabay.com/audio/study-beats.mp3'. Title is 'Midnight Code Stream', artist 'Chroma LoFi', genre 'Deep Focus'. Please add it to VibeDesk with a dark aesthetic cyberpunk cover."*
 
-### Ví dụ 2: Cập nhật bài hát
-> *"AI ơi, đổi ảnh bìa của bài 'trk-01' sang ảnh phong cách anime cyberpunk tím và sửa lời bài hát cho sâu lắng hơn nhé."*
+### Example 2: Update Existing Song
+> *"Please inspect the playlist, find 'trk-01', update its album art with a moody rainy city night photo from Unsplash, and refine its lyrics."*
 
-### Ví dụ 3: Đồng bộ và Deploy lên Production
-> *"AI ơi, hãy đồng bộ playlist vừa cập nhật và đẩy code lên GitHub để Vercel tự build live."*
-*(AI sẽ tự động gọi tool `vibedesk_git_sync` để commit và push lên nhánh `main`)*
+### Example 3: Sync & Deploy to Production
+> *"Sync the latest playlist updates and push them to GitHub so Vercel redeploys automatically."*
+*(The AI will call `vibedesk_git_sync`, committing and pushing to remote `main` branch).*
 
 ---
 
-## 🔒 3. Bảo Mật & Ràng Buộc
-- MCP Server chỉ ghi vào file cấu hình chuẩn `src/data/playlist.json`, đảm bảo an toàn tuyệt đối, không ghi đè mã nguồn dự án.
-- Luôn kiểm tra định dạng và tự động gán ID bài hát duy nhất `trk-{timestamp}`.
+## 🔒 3. Safety & Architectural Constraints
+- The MCP server operates strictly on `src/data/playlist.json` using atomic read/write locks, preventing accidental source code corruption.
+- Generated IDs follow the unique alphanumeric scheme `trk-{timestamp}-{random}`.
+- All track insertions auto-update the root `updatedAt` metadata field.
